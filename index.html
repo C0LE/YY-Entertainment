@@ -662,11 +662,66 @@ body.dark .testimonial-card p {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: #ddd;
+    overflow: hidden;           /* ← THIS is crucial — crops anything outside the circle */
+    background: #ddd;           /* fallback color while image loads */
+    flex-shrink: 0;             /* prevents shrinking in flex layouts */
+}
+
+.testimonial-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* ← THIS is the magic — scales & crops to fill nicely */
+    object-position: center;    /* centers the face/subject */
+    display: block;             /* removes tiny bottom gap some browsers add */
 }
 .testimonial-name {
     font-weight: 600;
     color: #d60000;
+}
+.faq {
+    padding: 80px 6%;
+    background: #f8f8f8;
+    text-align: center;
+}
+body.dark .faq {
+    background: #111;
+}
+.faq h2 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #d60000;
+    margin-bottom: 60px;
+}
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.faq-item {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    text-align: left;
+}
+body.dark .faq-item {
+    background: #1e1e1e;
+}
+.faq-item h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #d60000;
+    margin-bottom: 10px;
+}
+.faq-item p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+}
+body.dark .faq-item p {
+    color: #ddd;
 }
 .about {
     padding: 80px 6%;
@@ -852,6 +907,28 @@ footer {
     opacity: 1;
     transform: translateX(-50%) translateY(-20px);
 }
+#merch-search {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 30px;
+    display: block;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: 2px solid white;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.9);
+    color: #111;
+    transition: border-color 0.3s;
+}
+#merch-search:focus {
+    outline: none;
+    border-color: #ff6666;
+}
+body.dark #merch-search {
+    background: rgba(30,30,30,0.9);
+    color: #eee;
+    border-color: #ff9999;
+}
 @media (max-width: 1100px) {
     .merch-grid { grid-template-columns: 1fr; gap: 50px; }
 }
@@ -869,8 +946,8 @@ footer {
     }
 }
 @media (max-width: 768px) {
-    .hero h2, .about h2, .contact h2, .offers h2, .merch h2, .testimonials h2 { font-size: 2.8rem; }
-    .hero, .about, .merch, .contact, .offers, .testimonials { padding: 60px 5%; }
+    .hero h2, .about h2, .contact h2, .offers h2, .merch h2, .testimonials h2, .faq h2 { font-size: 2.8rem; }
+    .hero, .about, .merch, .contact, .offers, .testimonials, .faq { padding: 60px 5%; }
     nav { padding: 1rem 5%; flex-direction: column; gap: 1rem; }
     nav ul { gap: 1.8rem; flex-wrap: wrap; justify-content: center; }
     .timer { padding: 24px 30px; gap: 14px; }
@@ -910,6 +987,43 @@ footer {
     }
     body.no-scroll { overflow: hidden; }
 }
+@media (max-width: 480px) {
+    nav h1 { font-size: 1.8rem; }
+    nav ul { gap: 1rem; font-size: 0.9rem; }
+    .hero { padding: 80px 5% 60px; }
+    .hero h2 { font-size: 2.5rem; }
+    .hero p { font-size: 1rem; }
+    .books { grid-template-columns: 1fr; gap: 30px; padding: 0 5% 60px; }
+    .book-card { max-width: 90%; margin: 0 auto; }
+    .offers { padding: 60px 5% 80px; }
+    .offers h2 { font-size: 2.5rem; }
+    .offer-subtitle { font-size: 1.2rem; }
+    .timer { padding: 20px 25px; gap: 10px; max-width: 90%; }
+    .timer-block span { font-size: 2.5rem; }
+    .timer-label { font-size: 0.9rem; }
+    .timer-colon { font-size: 2.5rem; }
+    .offer-text h3 { font-size: 2rem; }
+    .offer-text ul { font-size: 1.1rem; }
+    .offer-price { font-size: 2rem; }
+    .offer-price s { font-size: 1.5rem; }
+    .offer-btn { padding: 14px 40px; font-size: 1.2rem; }
+    .merch h2 { font-size: 2.5rem; margin-bottom: 40px; }
+    .merch-grid { gap: 40px; }
+    .merch-subsection h3 { font-size: 1.6rem; margin-bottom: 20px; }
+    .merch-cards { grid-template-columns: 1fr; gap: 20px; }
+    .merch-card img { max-height: 200px; object-fit: contain; }
+    .testimonials h2, .faq h2 { font-size: 2.5rem; margin-bottom: 40px; }
+    .testimonial-grid, .faq-grid { grid-template-columns: 1fr; gap: 30px; }
+    .about h2 { font-size: 2.5rem; margin-bottom: 30px; }
+    .about p { font-size: 1rem; }
+    .contact h2 { font-size: 2.5rem; margin-bottom: 30px; }
+    .contact-info { font-size: 1rem; }
+    .contact-form input, .contact-form textarea { padding: 10px 14px; font-size: 0.9rem; }
+    .contact-form button { padding: 12px 30px; font-size: 1rem; }
+    footer { padding: 30px 15px; font-size: 0.9rem; }
+    #scrollTop { bottom: 20px; right: 20px; width: 40px; height: 40px; font-size: 1.4rem; }
+    #merch-search { max-width: 100%; padding: 10px 15px; font-size: 0.9rem; }
+}
 </style>
 </head>
 <body>
@@ -924,6 +1038,7 @@ footer {
         <li><a href="#Shop">Merch</a></li>
         <li><a href="#Offers">Offers</a></li>
         <li><a href="#About">About</a></li>
+        <li><a href="#FAQ">FAQ</a></li>
         <li><a href="#Contact">Contact</a></li>
         <li class="wishlist-container">
             <button class="wishlist-btn" id="wishlist-toggle" aria-label="Wishlist">♥</button>
@@ -1026,6 +1141,7 @@ footer {
 
 <section class="merch" id="Shop">
     <h2>Our Merch</h2>
+    <input type="text" id="merch-search" placeholder="Search for merch...">
     <div class="merch-grid">
         <!-- Funko Pops -->
         <div class="merch-subsection">
@@ -1215,24 +1331,24 @@ footer {
     <h2>What Our Fans Say</h2>
     <div class="testimonial-grid">
         <div class="testimonial-card">
-            <p>"Morri-Chan manga is hilariously chaotic! The merch is top-notch too – my Funko Pop arrived super fast."</p>
+            <p>"Loved the cat ears and tail set - they fit me perfectly!"</p>
             <div class="testimonial-author">
-                <div class="testimonial-avatar"></div>
-                <span class="testimonial-name">Alex K.</span>
+                <div class="testimonial-avatar"><img src="images/profile1.png"></div>
+                <span class="testimonial-name">Sofie Jashari</span>
             </div>
         </div>
         <div class="testimonial-card">
-            <p>"Love the bundle offer! The body pillow is so comfy, and the album helps me sleep like a baby."</p>
+            <p>"The Bed offer is the best - ASMR Mommy Album really tingles my brain. 10/10!"</p>
             <div class="testimonial-author">
-                <div class="testimonial-avatar"></div>
-                <span class="testimonial-name">Jamie L.</span>
+                <div class="testimonial-avatar"><img src="images/profile2.png"></div>
+                <span class="testimonial-name">Afrim Gashi</span>
             </div>
         </div>
         <div class="testimonial-card">
-            <p>"Best indie manga site ever. Instant downloads and cute accessories – I'm obsessed!"</p>
+            <p>"The technology that was used was extraordinary! Ill be using the fluff pink cuffs real soon!"</p>
             <div class="testimonial-author">
-                <div class="testimonial-avatar"></div>
-                <span class="testimonial-name">Taylor M.</span>
+                <div class="testimonial-avatar"><img src="images/profile3.png"></div>
+                <span class="testimonial-name">Rrustem Xhafolli</span>
             </div>
         </div>
     </div>
@@ -1245,6 +1361,32 @@ footer {
     <p>All our manga are digital-first: instant PDF downloads, high-quality panels, no waiting for shipping (unless you're grabbing merch... then yes, shipping is real). We pour love (and probably too much caffeine) into every page so you can read Morri-Chan #1, #2, #3 (and more coming soon) the second you want them.</p>
     <p>And because books alone aren't enough chaos, we also drop limited merch drops: Funko Pops that look way too much like the characters, shirts you’ll wear until they fall apart, wild shoes nobody asked for but everybody needs, and even Kinder Eggs with surprise Morri-themed toys inside. Everything is made with the same energy we put into the manga — loud, colorful, and a little unhinged.</p>
     <p>So yeah… welcome to the family. Grab a manga, cop some merch, and join the Morri-Chan madness. 💥🐾</p>
+</section>
+
+<section class="faq" id="FAQ">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-grid">
+        <div class="faq-item">
+            <h3>What is Morri-Chan?</h3>
+            <p>Morri-Chan is our flagship manga series featuring chaotic and adorable adventures.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How do I download the manga?</h3>
+            <p>After purchase, you'll receive an instant PDF download link via email.</p>
+        </div>
+        <div class="faq-item">
+            <h3>What is your shipping policy?</h3>
+            <p>We ship worldwide with standard delivery in 5-10 business days. Tracking is provided.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Do you offer refunds?</h3>
+            <p>Digital products are non-refundable. Physical merch can be returned within 14 days if unused.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How can I contact support?</h3>
+            <p>Email us at YYEntertainment@gmail.com or use the contact form below.</p>
+        </div>
+    </div>
 </section>
 
 <section class="contact" id="Contact">
@@ -1695,6 +1837,22 @@ window.addEventListener('scroll', () => {
     scrollBtn.classList.toggle('show', window.scrollY > 400);
 });
 scrollBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+// Merch Search Feature
+const merchSearch = document.getElementById('merch-search');
+if (merchSearch) {
+    merchSearch.addEventListener('keyup', () => {
+        const term = merchSearch.value.toLowerCase();
+        document.querySelectorAll('.merch-card').forEach(card => {
+            const name = card.querySelector('h4').textContent.toLowerCase();
+            card.style.display = name.includes(term) ? '' : 'none';
+        });
+        document.querySelectorAll('.merch-subsection').forEach(subsection => {
+            const visibleCards = Array.from(subsection.querySelectorAll('.merch-card')).filter(card => card.style.display !== 'none');
+            subsection.style.display = visibleCards.length > 0 ? '' : 'none';
+        });
+    });
+}
 
 // Initial render
 renderWishlist();
