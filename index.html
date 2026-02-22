@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YY Entertainment</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- add your favicon later -->
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #ffffff;
+    color: #111;
+    min-height: 100vh;
+    transition: background 0.4s, color 0.4s;
+}
+body.dark {
+    background: #0f0f0f;
+    color: #e0e0e0;
+}
+body.dark h1, body.dark h2, body.dark h3, body.dark h4,
+body.dark .price, body.dark .offer-price, body.dark .wishlist-header,
+body.dark .cart-header, body.dark .testimonial-name {
+    color: #ff6666;
+}
+body.dark .book-info, body.dark .merch-card h4, body.dark .about p strong {
+    color: #ff9999;
+}
+body.dark a:not(.btn):not(.offer-btn):not(.btn-cart) {
+    color: #ffaaaa;
+}
+.particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.15;
+}
+.particle {
+    position: absolute;
+    background: #d60000;
+    border-radius: 50%;
+    animation: float 25s infinite linear;
+}
+@keyframes float {
+    0% { transform: translateY(110vh) scale(0.2); opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.8; }
+    100% { transform: translateY(-100px) scale(0.4); opacity: 0; }
+}
+nav {
+    background: #d60000;
+    padding: 1.2rem 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+    transition: background 0.3s;
+}
+body.dark nav {
+    background: #a00000;
+}
+a {
+    text-decoration: none;
+    color: white;
+}
+nav h1 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2.2rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+nav li {
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+nav li:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+.wishlist-container, .cart-container {
+    position: relative;
+}
+.wishlist-btn, .cart-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+/* ── Wishlist heart colors (main change) ──────────────────────────────── */
+.wishlist-btn {
+    color: #ff69b4;          /* Hot pink when NOT in wishlist */
+    opacity: 0.9;
+}
+
+.wishlist-btn.active {
+    color: #d60000;          /* Strong red when added to wishlist */
+    transform: scale(1.15);
+    text-shadow: 0 0 8px rgba(214, 0, 0, 0.7);
+    animation: heartPulse 1.2s ease-in-out infinite;
+}
+
+body.dark .wishlist-btn {
+    color: #ff85c0;          /* Softer pink in dark mode (not active) */
+}
+
+body.dark .wishlist-btn.active {
+    color: #ff4444;          /* Bright red in dark mode when active */
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+}
+
+@keyframes heartPulse {
+    0%   { transform: scale(1.15); }
+    50%  { transform: scale(1.25); }
+    100% { transform: scale(1.15); }
+}
+
+.wishlist-btn:not(.active):hover {
+    opacity: 1;
+    color: #ff1493;          /* Deeper hot pink on hover when not added */
+    transform: scale(1.1);
+}
+
+.wishlist-btn::before { content: "♡"; }
+.wishlist-btn.active::before { content: "♥"; }
+
+.cart-btn::before { content: "🛒"; }
+.wishlist-badge, .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: white;
+    color: #d60000;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
+    display: none;
+}
+body.dark .wishlist-badge, body.dark .cart-badge {
+    background: #ffcccc;
+    color: #a00000;
+}
+.wishlist-dropdown, .cart-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    width: 340px;
+    max-height: 420px;
+    overflow-y: auto;
+    z-index: 2000;
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    color: #111;
+}
+body.dark .wishlist-dropdown, body.dark .cart-dropdown {
+    background: #1a1a1a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+.wishlist-dropdown.show, .cart-dropdown.show {
+    display: block;
+}
+.wishlist-header, .cart-header {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 14px;
+    color: #d60000;
+    text-align: center;
+}
+.wishlist-item, .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+body.dark .wishlist-item, body.dark .cart-item {
+    border-bottom-color: #444;
+}
+.wishlist-item:last-child, .cart-item:last-child {
+    border-bottom: none;
+}
+.wishlist-item img, .cart-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.wishlist-item-info, .cart-item-info {
+    flex: 1;
+}
+.wishlist-item-name, .cart-item-name {
+    font-weight: 600;
+    font-size: 0.98rem;
+}
+.wishlist-item-price, .cart-item-price {
+    color: #d60000;
+    font-size: 0.92rem;
+}
+body.dark .wishlist-item-price, body.dark .cart-item-price {
+    color: #ff9999;
+}
+.remove-btn {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #777;
+    transition: all 0.2s;
+}
+body.dark .remove-btn {
+    background: #444;
+    color: #ccc;
+}
+.remove-btn:hover {
+    background: #ffdddd;
+    color: #d60000;
+}
+body.dark .remove-btn:hover {
+    background: #ff6666;
+    color: white;
+}
+.wishlist-empty, .cart-empty {
+    text-align: center;
+    padding: 24px;
+    color: #888;
+    font-style: italic;
+}
+body.dark .wishlist-empty, body.dark .cart-empty {
+    color: #999;
+}
+.clear-btn {
+    display: block;
+    margin: 16px auto 8px;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+body.dark .clear-btn {
+    background: #555;
+}
+.clear-btn:hover {
+    background: #666;
+}
+.hero {
+    padding: 130px 6% 100px;
+    text-align: center;
+}
+.hero h2 {
+    font-size: 5rem;
+    font-weight: 900;
+    color: #d60000;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+body.dark .hero h2 { color: #ff6666; }
+.books {
+    padding: 0 6% 90px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 44px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+.book-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    text-align: center;
+}
+body.dark .book-card { background: #1e1e1e; }
+.book-card:hover {
+    transform: translateY(-16px) scale(1.05);
+    box-shadow: 0 28px 70px rgba(214,0,0,0.22);
+}
+body.dark .book-card:hover {
+    box-shadow: 0 28px 70px rgba(255,100,100,0.35);
+}
+canvas {
+    width: 100%;
+    display: block;
+    background: #f8f8f8;
+}
+body.dark canvas { background: #222; }
+.book-info {
+    padding: 26px 22px;
+}
+h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.7rem;
+}
+.price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #d60000;
+    margin: 0.9rem 0;
+}
+.btn, .btn-cart {
+    display: inline-block;
+    background: #d60000;
+    color: white;
+    padding: 13px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.btn:hover, .btn-cart:hover {
+    background: #b20000;
+    transform: translateY(-4px);
+}
+body.dark .btn:hover, body.dark .btn-cart:hover {
+    background: #c40000;
+}
+.btn-cart {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    margin-top: 10px;
+}
+.quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 12px 0;
+}
+.quantity button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    background: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+body.dark .quantity button {
+    background: #333;
+    border-color: #555;
+    color: white;
+}
+.quantity button:hover {
+    background: #eee;
+    transform: scale(1.1);
+}
+body.dark .quantity button:hover {
+    background: #555;
+}
+.offers {
+    background: linear-gradient(135deg, #d60000 0%, #8b0000 100%);
+    color: white;
+    padding: 110px 6% 120px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.offers::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.14) 0%, transparent 65%);
+    pointer-events: none;
+}
+.offers-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+.offers h2 {
+    font-size: 4.5rem;
+    font-weight: 900;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 5px 14px rgba(0,0,0,0.55);
+}
+.offer-subtitle {
+    font-size: 1.6rem;
+    margin-bottom: 2.8rem;
+    opacity: 0.95;
+}
+.timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    margin: 0 auto 70px;
+    background: rgba(0,0,0,0.5);
+    padding: 36px 60px;
+    border-radius: 28px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
+    max-width: 620px;
+    box-shadow: 0 14px 50px rgba(0,0,0,0.5);
+}
+.timer-block {
+    min-width: 100px;
+}
+.timer-block span {
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1;
+    display: block;
+}
+.timer-label {
+    font-size: 1.15rem;
+    opacity: 0.9;
+    margin-top: 8px;
+}
+.timer-colon {
+    font-size: 3.8rem;
+    font-weight: 300;
+    align-self: flex-start;
+    margin-top: 12px;
+}
+.offer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+.offer-image {
+    width: 700px;
+    max-width: 55%;
+    border-radius: 24px;
+    box-shadow: 0 20px 70px rgba(0,0,0,0.6);
+    border: 10px solid rgba(255,255,255,0.2);
+    transition: transform 0.4s ease;
+    flex-shrink: 0;
+}
+.offer-image:hover {
+    transform: scale(1.04);
+}
+.offer-text {
+    max-width: 520px;
+    text-align: left;
+    flex: 1;
+}
+.offer-text h3 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    color: #fff;
+}
+.offer-text ul {
+    font-size: 1.4rem;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+    list-style: none;
+}
+.offer-text li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+.offer-text li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #fff;
+}
+.offer-price {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 1.2rem 0 2rem;
+    color: #fff;
+}
+.offer-price s {
+    font-size: 2rem;
+    opacity: 0.7;
+    margin-left: 16px;
+}
+.offer-btn {
+    background: #fff;
+    color: #d60000;
+    padding: 18px 56px;
+    font-size: 1.5rem;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+}
+.offer-btn:hover {
+    background: #f8f8f8;
+    transform: translateY(-5px);
+    box-shadow: 0 16px 50px rgba(0,0,0,0.45);
+}
+.offer-urgency {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-top: 1rem;
+}
+.merch {
+    background: #d60000;
+    color: white;
+    padding: 80px 6%;
+}
+.merch h2 {
+    text-align: center;
+    color: white;
+    font-size: 3.2rem;
+    font-weight: 800;
+    margin-bottom: 60px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.merch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.merch-subsection {
+    background: rgba(255,255,255,0.92);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    transition: box-shadow 0.4s;
+}
+body.dark .merch-subsection {
+    background: rgba(40,40,40,0.92);
+}
+.merch-subsection:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+.merch-subsection h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #d60000;
+    text-align: center;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.merch-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+}
+.merch-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: all 0.35s ease;
+    position: relative;
+    cursor: pointer;
+}
+body.dark .merch-card {
+    background: #222;
+}
+.merch-card:hover {
+    transform: translateY(-12px) scale(1.04);
+    box-shadow: 0 20px 50px rgba(214,0,0,0.22);
+}
+body.dark .merch-card:hover {
+    box-shadow: 0 20px 50px rgba(255,100,100,0.4);
+    will-change: transform, box-shadow;
+}
+.merch-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+.merch-card h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: #111;
+}
+body.dark .merch-card h4 {
+    color: #eee;
+}
+.testimonials {
+    padding: 80px 6%;
+    background: #f8f8f8;
+    text-align: center;
+}
+body.dark .testimonials {
+    background: #111;
+}
+.testimonials h2 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #d60000;
+    margin-bottom: 60px;
+}
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.testimonial-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    text-align: left;
+}
+body.dark .testimonial-card {
+    background: #1e1e1e;
+}
+.testimonial-card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #333;
+}
+body.dark .testimonial-card p {
+    color: #ddd;
+}
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.testimonial-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ddd;
+}
+.testimonial-name {
+    font-weight: 600;
+    color: #d60000;
+}
+.about {
+    padding: 80px 6%;
+    background: #fff;
+    text-align: center;
+}
+body.dark .about {
+    background: #0f0f0f;
+}
+.about h2 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #d60000;
+    margin-bottom: 40px;
+}
+.about p {
+    max-width: 900px;
+    margin: 0 auto 24px;
+    font-size: 1.18rem;
+    line-height: 1.8;
+    color: #333;
+}
+body.dark .about p {
+    color: #ddd;
+}
+.about p strong {
+    color: #d60000;
+}
+.contact {
+    background: #f8f8f8;
+    padding: 80px 6%;
+    text-align: center;
+}
+body.dark .contact {
+    background: #111;
+}
+.contact h2 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #d60000;
+    margin-bottom: 40px;
+}
+.contact-info {
+    max-width: 800px;
+    margin: 0 auto 50px;
+    font-size: 1.2rem;
+    color: #444;
+    line-height: 1.7;
+}
+body.dark .contact-info {
+    color: #ccc;
+}
+.contact-info p {
+    margin: 12px 0;
+}
+.contact-info a {
+    color: #d60000;
+    text-decoration: none;
+    font-weight: 600;
+}
+.contact-info a:hover {
+    text-decoration: underline;
+}
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 14px 18px;
+    margin: 12px 0;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+body.dark .contact-form input,
+body.dark .contact-form textarea {
+    background: #222;
+    color: #eee;
+    border-color: #444;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: #d60000;
+    box-shadow: 0 0 0 3px rgba(214,0,0,0.15);
+}
+.contact-form textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+.contact-form button {
+    background: #d60000;
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.contact-form button:hover {
+    background: #b20000;
+    transform: translateY(-3px);
+}
+footer {
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 0;
+    font-size: 1.05rem;
+}
+.footer-links {
+    margin-top: 10px;
+}
+.footer-links a {
+    color: #ccc;
+    margin: 0 10px;
+    text-decoration: none;
+}
+.footer-links a:hover {
+    color: white;
+}
+#scrollTop {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: #d60000;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s;
+    z-index: 999;
+}
+#scrollTop.show {
+    opacity: 0.9;
+    visibility: visible;
+}
+#scrollTop:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+#darkModeToggle {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s;
+}
+#darkModeToggle:hover {
+    background: rgba(255,255,255,0.35);
+}
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d60000;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    z-index: 3000;
+    opacity: 0;
+    transition: opacity 0.4s, transform 0.4s;
+    pointer-events: none;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-20px);
+}
+@media (max-width: 1100px) {
+    .merch-grid { grid-template-columns: 1fr; gap: 50px; }
+}
+@media (max-width: 1000px) {
+    .offer-content {
+        flex-direction: column;
+        gap: 60px;
+    }
+    .offer-image {
+        width: 90%;
+        max-width: 700px;
+    }
+    .offer-text {
+        text-align: center;
+    }
+}
+@media (max-width: 768px) {
+    .hero h2, .about h2, .contact h2, .offers h2, .merch h2, .testimonials h2 { font-size: 2.8rem; }
+    .hero, .about, .merch, .contact, .offers, .testimonials { padding: 60px 5%; }
+    nav { padding: 1rem 5%; flex-direction: column; gap: 1rem; }
+    nav ul { gap: 1.8rem; flex-wrap: wrap; justify-content: center; }
+    .timer { padding: 24px 30px; gap: 14px; }
+    .timer-block span { font-size: 3.2rem; }
+    .offer-image { width: 100%; max-width: 500px; }
+    .wishlist-dropdown, .cart-dropdown {
+        width: 94vw;
+        max-width: 380px;
+        left: 3vw;
+        right: 3vw;
+        margin: 12px auto 0 auto;
+        border-radius: 16px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        max-height: 65vh;
+        padding: 20px;
+    }
+    .wishlist-item, .cart-item {
+        padding: 14px 10px;
+        gap: 16px;
+    }
+    .wishlist-item img, .cart-item img {
+        width: 70px;
+        height: 70px;
+    }
+    .remove-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+    }
+    .wishlist-header, .cart-header {
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+    .wishlist-empty, .cart-empty {
+        padding: 30px 15px;
+        font-size: 1.1rem;
+    }
+    body.no-scroll { overflow: hidden; }
+}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<nav>
+    <h1>YY Entertainment</h1>
+    <ul>
+        <li><a href="#Home">Home</a></li>
+        <li><a href="#Manga">Manga</a></li>
+        <li><a href="#Shop">Merch</a></li>
+        <li><a href="#Offers">Offers</a></li>
+        <li><a href="#About">About</a></li>
+        <li><a href="#Contact">Contact</a></li>
+        <li class="wishlist-container">
+            <button class="wishlist-btn" id="wishlist-toggle" aria-label="Wishlist">♥</button>
+            <span class="wishlist-badge" id="wishlist-badge">0</span>
+            <div class="wishlist-dropdown" id="wishlist-dropdown">
+                <div class="wishlist-header">Your Wishlist</div>
+                <div id="wishlist-items"></div>
+                <button class="clear-btn" id="clear-wishlist">Clear Wishlist</button>
+            </div>
+        </li>
+        <li class="cart-container">
+            <button class="cart-btn" id="cart-toggle" aria-label="Cart">🛒</button>
+            <span class="cart-badge" id="cart-badge">0</span>
+            <div class="cart-dropdown" id="cart-dropdown">
+                <div class="cart-header">Your Cart</div>
+                <div id="cart-items"></div>
+                <div style="margin-top:16px;text-align:center;font-weight:600;">
+                    Total: <span id="cart-total">$0.00</span>
+                </div>
+                <button class="clear-btn" id="clear-cart">Clear Cart</button>
+            </div>
+        </li>
+        <li>
+            <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙</button>
+        </li>
+    </ul>
+</nav>
+
+<section class="hero" id="Home">
+    <h2>Welcome to YY Entertainment!</h2>
+    <p>Premium Digital Manga & Kawaii Merch – Instant Download & Fast Shipping</p>
+</section>
+
+<section class="books" id="Manga">
+    <div class="book-card">
+        <canvas id="thumb1"></canvas>
+        <div class="book-info">
+            <h3>Morri-Chan #1</h3>
+            <div class="price">$14.99</div>
+            <a href="#download-book1" class="btn">Download PDF</a>
+        </div>
+    </div>
+    <div class="book-card">
+        <canvas id="thumb2"></canvas>
+        <div class="book-info">
+            <h3>Morri-Chan #2</h3>
+            <div class="price">$14.99</div>
+            <a href="#download-book2" class="btn">Download PDF</a>
+        </div>
+    </div>
+    <div class="book-card">
+        <canvas id="thumb3"></canvas>
+        <div class="book-info">
+            <h3>Morri-Chan #3</h3>
+            <div class="price">$14.99</div>
+            <a href="#download-book3" class="btn">Download PDF</a>
+        </div>
+    </div>
+</section>
+
+<section class="offers" id="Offers">
+    <div class="offers-container">
+        <h2>LIMITED TIME OFFER!</h2>
+        <p class="offer-subtitle">Only available for the next</p>
+        <div class="timer" id="countdown">
+            <div class="timer-block">
+                <span id="hours">67</span>
+                <div class="timer-label">Hours</div>
+            </div>
+            <div class="timer-colon">:</div>
+            <div class="timer-block">
+                <span id="minutes">00</span>
+                <div class="timer-label">Minutes</div>
+            </div>
+            <div class="timer-colon">:</div>
+            <div class="timer-block">
+                <span id="seconds">00</span>
+                <div class="timer-label">Seconds</div>
+            </div>
+        </div>
+        <div class="offer-content">
+            <img src="images/Offer.png" alt="Go for it Morri-Chan Bed Offer" class="offer-image" loading="lazy">
+            <div class="offer-text">
+                <h3>Go for it Morri-Chan Bed Offer</h3>
+                <ul>
+                    <li>Customized Bed Sheets</li>
+                    <li>Fluffy Slippers</li>
+                    <li>Blanket</li>
+                    <li><strong>Mommy</strong> Talking to good boy for sleep - Album</li>
+                    <li>Body Pillow</li>
+                </ul>
+                <p><strong>Ultimate cozy chaos bundle – grab it before time runs out!</strong></p>
+                <div class="offer-price">$149.99 <s>$249.99</s></div>
+                <a href="#claim-offer" class="btn offer-btn">Claim Now – Save $100!</a>
+                <p class="offer-urgency">Only 18 bundles left! 73 people viewing now.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="merch" id="Shop">
+    <h2>Our Merch</h2>
+    <div class="merch-grid">
+        <!-- Funko Pops -->
+        <div class="merch-subsection">
+            <h3>Funko Pops</h3>
+            <div class="merch-cards">
+                <div class="merch-card" data-id="funko1" data-name="Funko Pop #1" data-price="$19.99" data-img="images/funko1.png">
+                    <img src="images/funko1.png" alt="Funko Pop 1" loading="lazy">
+                    <h4>Funko Pop #1</h4>
+                    <div class="price">$19.99</div>
+                    <a href="#shop-funko1" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="funko1">♥</button>
+                </div>
+                <div class="merch-card" data-id="funko2" data-name="Funko Pop #2" data-price="$19.99" data-img="images/funko2.png">
+                    <img src="images/funko2.png" alt="Funko Pop 2" loading="lazy">
+                    <h4>Funko Pop #2</h4>
+                    <div class="price">$19.99</div>
+                    <a href="#shop-funko2" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="funko2">♥</button>
+                </div>
+                <div class="merch-card" data-id="funko3" data-name="Funko Pop #3" data-price="$19.99" data-img="images/funko3.png">
+                    <img src="images/funko3.png" alt="Funko Pop 3" loading="lazy">
+                    <h4>Funko Pop #3</h4>
+                    <div class="price">$19.99</div>
+                    <a href="#shop-funko3" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="funko3">♥</button>
+                </div>
+            </div>
+        </div>
+        <!-- Shirts -->
+        <div class="merch-subsection">
+            <h3>Shirts</h3>
+            <div class="merch-cards">
+                <div class="merch-card" data-id="shirt1" data-name="Shirt #1" data-price="$24.99" data-img="images/Shirt1.png">
+                    <img src="images/Shirt1.png" alt="Shirt 1" loading="lazy">
+                    <h4>Shirt #1</h4>
+                    <div class="price">$24.99</div>
+                    <a href="#shop-shirt1" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="shirt1">♥</button>
+                </div>
+                <div class="merch-card" data-id="shirt2" data-name="Shirt #2" data-price="$24.99" data-img="images/Shirt2.png">
+                    <img src="images/Shirt2.png" alt="Shirt 2" loading="lazy">
+                    <h4>Shirt #2</h4>
+                    <div class="price">$24.99</div>
+                    <a href="#shop-shirt2" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="shirt2">♥</button>
+                </div>
+                <div class="merch-card" data-id="shirt3" data-name="Shirt #3" data-price="$24.99" data-img="images/Shirt3.png">
+                    <img src="images/Shirt3.png" alt="Shirt 3" loading="lazy">
+                    <h4>Shirt #3</h4>
+                    <div class="price">$24.99</div>
+                    <a href="#shop-shirt3" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="shirt3">♥</button>
+                </div>
+            </div>
+        </div>
+        <!-- Shoes -->
+        <div class="merch-subsection">
+            <h3>Shoes</h3>
+            <div class="merch-cards">
+                <div class="merch-card" data-id="shoes1" data-name="Juicy Drop" data-price="$49.99" data-img="images/shoes1.png">
+                    <img src="images/shoes1.png" alt="Shoes 1" loading="lazy">
+                    <h4>Juicy Drop</h4>
+                    <div class="price">$49.99</div>
+                    <a href="#shop-shoes1" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="shoes1">♥</button>
+                </div>
+                <div class="merch-card" data-id="shoes2" data-name="Classic Jonasitos" data-price="$49.99" data-img="images/shoes2.png">
+                    <img src="images/shoes2.png" alt="Shoes 2" loading="lazy">
+                    <h4>Classic Jonasitos</h4>
+                    <div class="price">$49.99</div>
+                    <a href="#shop-shoes2" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="shoes2">♥</button>
+                </div>
+                <div class="merch-card" data-id="shoes3" data-name="Nike LGBT Air Force 67" data-price="$49.99" data-img="images/shoes3.png">
+                    <img src="images/shoes3.png" alt="Shoes 3" loading="lazy">
+                    <h4>Nike LGBT Air Force 67</h4>
+                    <div class="price">$49.99</div>
+                    <a href="#shop-shoes3" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="shoes3">♥</button>
+                </div>
+            </div>
+        </div>
+        <!-- Kinder Eggs -->
+        <div class="merch-subsection">
+            <h3>Kinder Eggs</h3>
+            <div class="merch-cards">
+                <div class="merch-card" data-id="kinder1" data-name="Morrito-Chan Joy!" data-price="$9.99" data-img="images/kinder1.jpg">
+                    <img src="images/kinder1.jpg" alt="Kinder Egg 1" loading="lazy">
+                    <h4>Morrito-Chan Joy!</h4>
+                    <div class="price">$9.99</div>
+                    <a href="#shop-kinder1" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="kinder1">♥</button>
+                </div>
+                <div class="merch-card" data-id="kinder2" data-name="Jonasito-Kun Pride!" data-price="$9.99" data-img="images/kinder2.png">
+                    <img src="images/kinder2.png" alt="Kinder Egg 2" loading="lazy">
+                    <h4>Jonasito-Kun Pride!</h4>
+                    <div class="price">$9.99</div>
+                    <a href="#shop-kinder2" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="kinder2">♥</button>
+                </div>
+                <div class="merch-card" data-id="kinder3" data-name="Jaurito-Kun Love!" data-price="$9.99" data-img="images/kinder3.png">
+                    <img src="images/kinder3.png" alt="Kinder Egg 3" loading="lazy">
+                    <h4>Jaurito-Kun Love!</h4>
+                    <div class="price">$9.99</div>
+                    <a href="#shop-kinder3" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="kinder3">♥</button>
+                </div>
+            </div>
+        </div>
+        <!-- Body Pillows -->
+        <div class="merch-subsection">
+            <h3>Body Pillows</h3>
+            <div class="merch-cards">
+                <div class="merch-card" data-id="pillow1" data-name="Morrito-Chan Joy!" data-price="$39.99" data-img="images/pillow1.png">
+                    <img src="images/pillow1.png" alt="Morri-Chan Pillow" loading="lazy">
+                    <h4>Morrito-Chan Joy!</h4>
+                    <div class="price">$39.99</div>
+                    <a href="#shop-pillow1" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="pillow1">♥</button>
+                </div>
+                <div class="merch-card" data-id="pillow2" data-name="Jonasito-Kun Pride!" data-price="$29.99" data-img="images/pillow2.png">
+                    <img src="images/pillow2.png" alt="Jonasito-Kun Pillow" loading="lazy">
+                    <h4>Jonasito-Kun Pride!</h4>
+                    <div class="price">$29.99</div>
+                    <a href="#shop-pillow2" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="pillow2">♥</button>
+                </div>
+                <div class="merch-card" data-id="pillow3" data-name="Jaurito-Kun Love!" data-price="$29.99" data-img="images/pillow3.png">
+                    <img src="images/pillow3.png" alt="Jaurito-Kun Pillow" loading="lazy">
+                    <h4>Jaurito-Kun Love!</h4>
+                    <div class="price">$29.99</div>
+                    <a href="#shop-pillow3" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="pillow3">♥</button>
+                </div>
+            </div>
+        </div>
+        <!-- Accessories -->
+        <div class="merch-subsection">
+            <h3>Accessories</h3>
+            <div class="merch-cards">
+                <div class="merch-card" data-id="acc1" data-name="Jaurito-Kun Ears" data-price="$24.99" data-img="images/ears.jpg">
+                    <img src="images/ears.jpg" alt="Jaurito-Kun Ears" loading="lazy">
+                    <h4>Jaurito-Kun Ears</h4>
+                    <div class="price">$24.99</div>
+                    <a href="#shop-acc1" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="acc1">♥</button>
+                </div>
+                <div class="merch-card" data-id="acc2" data-name="Jonasito-Kun Jacket" data-price="$39.99" data-img="images/coat.jpg">
+                    <img src="images/coat.jpg" alt="Jonasito-Kun Jacket" loading="lazy">
+                    <h4>Jonasito-Kun Jacket</h4>
+                    <div class="price">$39.99</div>
+                    <a href="#shop-acc2" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="acc2">♥</button>
+                </div>
+                <div class="merch-card" data-id="acc3" data-name="Morri-Chans FannyPack" data-price="$14.99" data-img="images/pack.avif">
+                    <img src="images/pack.avif" alt="Morri-Chans FannyPack" loading="lazy">
+                    <h4>Morri-Chans FannyPack</h4>
+                    <div class="price">$14.99</div>
+                    <a href="#shop-acc3" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="acc3">♥</button>
+                </div>
+                <div class="merch-card" data-id="acc4" data-name="Morri-Chans Pink Fluff Cuffs" data-price="$9.99" data-img="images/cuffs.jpg">
+                    <img src="images/cuffs.jpg" alt="Morri-Chans Pink Fluff Cuffs" loading="lazy">
+                    <h4>Morri-Chans Pink Fluff Cuffs</h4>
+                    <div class="price">$9.99</div>
+                    <a href="#shop-acc4" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="acc4">♥</button>
+                </div>
+                <div class="merch-card" data-id="acc5" data-name="Morri-Jaurito Slime" data-price="$4.99" data-img="images/slime.png">
+                    <img src="images/slime.png" alt="Morri-Jaurito Slime" loading="lazy">
+                    <h4>Morri-Jaurito Slime</h4>
+                    <div class="price">$4.99</div>
+                    <a href="#shop-acc5" class="btn">Shop Now</a>
+                    <button class="wishlist-btn" data-id="acc5">♥</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="recently-viewed" id="recently-viewed">
+        <h2>Recently Viewed</h2>
+        <div class="merch-cards" id="recent-viewed-grid"></div>
+    </section>
+</section>
+
+<section class="testimonials">
+    <h2>What Our Fans Say</h2>
+    <div class="testimonial-grid">
+        <div class="testimonial-card">
+            <p>"Morri-Chan manga is hilariously chaotic! The merch is top-notch too – my Funko Pop arrived super fast."</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar"></div>
+                <span class="testimonial-name">Alex K.</span>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <p>"Love the bundle offer! The body pillow is so comfy, and the album helps me sleep like a baby."</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar"></div>
+                <span class="testimonial-name">Jamie L.</span>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <p>"Best indie manga site ever. Instant downloads and cute accessories – I'm obsessed!"</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar"></div>
+                <span class="testimonial-name">Taylor M.</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about" id="About">
+    <h2>About Us</h2>
+    <p>Welcome to <strong>YY Entertainment</strong> — where chaos meets cuteness and manga obsession becomes a lifestyle!</p>
+    <p>We're a small, wild team from Pristina obsessed with creating and sharing the kind of stories that make you laugh, scream, and spam your group chat with screenshots. Our flagship series <strong>Morri-Chan</strong> follows the unhinged, adorable, and slightly cursed adventures of Morri-Chan and her chaotic circle of friends — think slice-of-life gone completely off the rails.</p>
+    <p>All our manga are digital-first: instant PDF downloads, high-quality panels, no waiting for shipping (unless you're grabbing merch... then yes, shipping is real). We pour love (and probably too much caffeine) into every page so you can read Morri-Chan #1, #2, #3 (and more coming soon) the second you want them.</p>
+    <p>And because books alone aren't enough chaos, we also drop limited merch drops: Funko Pops that look way too much like the characters, shirts you’ll wear until they fall apart, wild shoes nobody asked for but everybody needs, and even Kinder Eggs with surprise Morri-themed toys inside. Everything is made with the same energy we put into the manga — loud, colorful, and a little unhinged.</p>
+    <p>So yeah… welcome to the family. Grab a manga, cop some merch, and join the Morri-Chan madness. 💥🐾</p>
+</section>
+
+<section class="contact" id="Contact">
+    <h2>Contact Us</h2>
+    <div class="contact-info">
+        <p>Have questions? Want to collaborate or just say hi? Reach out!</p>
+        <p><strong>Email:</strong> <a href="mailto:YYEntertainment@gmail.com">YYEntertainment@gmail.com</a></p>
+        <p><strong>Phone:</strong> +383 49 123 456</p>
+        <p><strong>Follow us:</strong>
+            <a href="#">Instagram</a> •
+            <a href="#">TikTok</a> •
+            <a href="#">X / Twitter</a>
+        </p>
+    </div>
+    <form class="contact-form" method="POST" action="https://formsubmit.co/YYEntertainment@gmail.com" novalidate>
+        <label for="contact-name">Your Name</label>
+        <input type="text" id="contact-name" name="name" placeholder="Your Name" required>
+
+        <label for="contact-email">Your Email</label>
+        <input type="email" id="contact-email" name="email" placeholder="Your Email" required>
+
+        <label for="contact-message">Your Message</label>
+        <textarea id="contact-message" name="message" placeholder="Your Message..." required></textarea>
+
+        <button type="submit">Send Message</button>
+
+        <input type="text" name="_gotcha" style="display:none">
+    </form>
+</section>
+
+<footer>
+    © 2026 YY Entertainment – All Rights Reserved
+    <div class="footer-links">
+        <a href="#privacy">Privacy Policy</a> •
+        <a href="#terms">Terms of Service</a> •
+        <a href="#refunds">Refund Policy</a>
+    </div>
+    <p>YY Entertainment | Pristina, Kosovo | Business ID: 123456789</p>
+</footer>
+
+<button id="scrollTop">↑</button>
+
+<div id="toast" class="toast">Added to cart!</div>
+
+<script>
+// Particles
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.width = p.style.height = `${Math.random()*5 + 3}px`;
+    p.style.left = `${Math.random()*100}vw`;
+    p.style.animationDelay = `${Math.random()*20}s`;
+    p.style.animationDuration = `${Math.random()*30 + 20}s`;
+    particlesContainer.appendChild(p);
+}
+
+// PDF Previews with better error handling
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+async function renderPDF(url, canvasId) {
+    try {
+        const pdf = await pdfjsLib.getDocument(url).promise;
+        const page = await pdf.getPage(1);
+        const scale = 1.55;
+        const viewport = page.getViewport({scale});
+        const canvas = document.getElementById(canvasId);
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({
+            canvasContext: canvas.getContext('2d'),
+            viewport: viewport
+        }).promise;
+    } catch (err) {
+        console.error("PDF load error:", url, err);
+        const canvas = document.getElementById(canvasId);
+        if (canvas) {
+            const parent = canvas.parentElement;
+            canvas.remove();
+            const fallback = document.createElement('div');
+            fallback.style.height = '400px';
+            fallback.style.background = '#f0f0f0';
+            fallback.style.display = 'flex';
+            fallback.style.alignItems = 'center';
+            fallback.style.justifyContent = 'center';
+            fallback.style.color = '#777';
+            fallback.style.fontStyle = 'italic';
+            fallback.textContent = 'Preview not available';
+            parent.insertBefore(fallback, parent.firstChild);
+        }
+    }
+}
+
+renderPDF('pdfs/book1.pdf', 'thumb1');
+renderPDF('pdfs/book2.pdf', 'thumb2');
+renderPDF('pdfs/book3.pdf', 'thumb3');
+
+// Offer Timer (persists across reloads)
+function startOfferTimer() {
+    let timeLeft = localStorage.getItem('offerTimeLeft') ? parseInt(localStorage.getItem('offerTimeLeft')) : 67 * 60 * 60;
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+    const timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            hoursEl.textContent = '00';
+            minutesEl.textContent = '00';
+            secondsEl.textContent = '00';
+            document.querySelector('.offer-subtitle').textContent = "Offer Expired!";
+            const btn = document.querySelector('.offer-btn');
+            btn.style.opacity = '0.5';
+            btn.textContent = "Offer Ended";
+            btn.style.pointerEvents = 'none';
+            return;
+        }
+        timeLeft--;
+        localStorage.setItem('offerTimeLeft', timeLeft);
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+        hoursEl.textContent = h.toString().padStart(2, '0');
+        minutesEl.textContent = m.toString().padStart(2, '0');
+        secondsEl.textContent = s.toString().padStart(2, '0');
+    }, 1000);
+}
+window.addEventListener('load', startOfferTimer);
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        if (this.getAttribute('href') === '#' || !this.getAttribute('href').startsWith('#')) return;
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        if (target) {
+            const navHeight = document.querySelector('nav').offsetHeight + 20;
+            const y = target.getBoundingClientRect().top + window.scrollY - navHeight;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    });
+});
+
+// ── Wishlist + Cart + Recently Viewed ────────────────────────
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+
+const wishlistToggle = document.getElementById('wishlist-toggle');
+const wishlistDropdown = document.getElementById('wishlist-dropdown');
+const wishlistItemsEl = document.getElementById('wishlist-items');
+const wishlistBadge = document.getElementById('wishlist-badge');
+
+const cartToggle = document.getElementById('cart-toggle');
+const cartDropdown = document.getElementById('cart-dropdown');
+const cartItemsEl = document.getElementById('cart-items');
+const cartBadge = document.getElementById('cart-badge');
+const cartTotalEl = document.getElementById('cart-total');
+
+const toast = document.getElementById('toast');
+
+function showToast(msg = "Added to cart!") {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function saveData() {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+}
+
+function updateBadges() {
+    wishlistBadge.textContent = wishlist.length;
+    wishlistBadge.style.display = wishlist.length > 0 ? 'block' : 'none';
+
+    const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    cartBadge.textContent = cartCount;
+    cartBadge.style.display = cartCount > 0 ? 'block' : 'none';
+
+    let total = cart.reduce((sum, item) => {
+        const priceNum = parseFloat(item.price.replace('$','')) || 0;
+        return sum + priceNum * (item.quantity || 1);
+    }, 0);
+    cartTotalEl.textContent = `$${total.toFixed(2)}`;
+}
+
+function renderWishlist() {
+    wishlistItemsEl.innerHTML = '';
+    if (wishlist.length === 0) {
+        wishlistItemsEl.innerHTML = '<div class="wishlist-empty">Your wishlist is empty ♡</div>';
+        return;
+    }
+    wishlist.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'wishlist-item';
+        div.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <div class="wishlist-item-info">
+                <div class="wishlist-item-name">${item.name}</div>
+                <div class="wishlist-item-price">${item.price}</div>
+            </div>
+            <button class="remove-btn" data-id="${item.id}">×</button>
+        `;
+        wishlistItemsEl.appendChild(div);
+    });
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            wishlist = wishlist.filter(item => item.id !== btn.dataset.id);
+            saveData();
+            renderWishlist();
+            updateBadges();
+            updateWishlistButtons();
+        });
+    });
+}
+
+function renderCart() {
+    cartItemsEl.innerHTML = '';
+    if (cart.length === 0) {
+        cartItemsEl.innerHTML = '<div class="cart-empty">Your cart is empty 🛒</div>';
+        return;
+    }
+    cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <div class="cart-item-info">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-price">${item.price} × ${item.quantity || 1}</div>
+            </div>
+            <button class="remove-btn" data-id="${item.id}">×</button>
+        `;
+        cartItemsEl.appendChild(div);
+    });
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            cart = cart.filter(item => item.id !== btn.dataset.id);
+            saveData();
+            renderCart();
+            updateBadges();
+        });
+    });
+}
+
+function updateWishlistButtons() {
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        const id = btn.dataset.id;
+        if (wishlist.some(item => item.id === id)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
+function addToRecentlyViewed(card) {
+    if (!card.dataset.id) return;
+    const item = {
+        id: card.dataset.id,
+        name: card.dataset.name,
+        price: card.dataset.price,
+        img: card.dataset.img
+    };
+    recentlyViewed = recentlyViewed.filter(i => i.id !== item.id);
+    recentlyViewed.unshift(item);
+    if (recentlyViewed.length > 6) recentlyViewed.pop();
+    saveData();
+    renderRecentlyViewed();
+}
+
+function renderRecentlyViewed() {
+    const grid = document.getElementById('recent-viewed-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    recentlyViewed.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'merch-card';
+        card.dataset.id = item.id;
+        card.dataset.name = item.name;
+        card.dataset.price = item.price;
+        card.dataset.img = item.img;
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.name}" loading="lazy">
+            <h4>${item.name}</h4>
+            <div class="price">${item.price}</div>
+            <a href="#shop-${item.id}" class="btn">Shop Now</a>
+            <button class="wishlist-btn" data-id="${item.id}">♥</button>
+        `;
+        grid.appendChild(card);
+    });
+    updateWishlistButtons();
+
+    // Re-attach click listeners for recently viewed cards
+    grid.querySelectorAll('a[href^="#shop-"]').forEach(link => {
+        link.addEventListener('click', () => {
+            const card = link.closest('.merch-card');
+            if (card) addToRecentlyViewed(card);
+        });
+    });
+}
+
+// ── Event Listeners ──────────────────────────────────────────
+wishlistToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    wishlistDropdown.classList.toggle('show');
+    cartDropdown.classList.remove('show');
+    toggleNoScroll();
+});
+
+cartToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    cartDropdown.classList.toggle('show');
+    wishlistDropdown.classList.remove('show');
+    toggleNoScroll();
+});
+
+document.addEventListener('click', (e) => {
+    if (!wishlistToggle.contains(e.target) && !wishlistDropdown.contains(e.target)) {
+        wishlistDropdown.classList.remove('show');
+    }
+    if (!cartToggle.contains(e.target) && !cartDropdown.contains(e.target)) {
+        cartDropdown.classList.remove('show');
+    }
+    toggleNoScroll();
+});
+
+function toggleNoScroll() {
+    document.body.classList.toggle('no-scroll', 
+        wishlistDropdown.classList.contains('show') || cartDropdown.classList.contains('show'));
+}
+
+// Clear buttons
+document.getElementById('clear-wishlist')?.addEventListener('click', () => {
+    if (confirm("Clear your entire wishlist?")) {
+        wishlist = [];
+        saveData();
+        renderWishlist();
+        updateBadges();
+        updateWishlistButtons();
+    }
+});
+
+document.getElementById('clear-cart')?.addEventListener('click', () => {
+    if (confirm("Clear your entire cart?")) {
+        cart = [];
+        saveData();
+        renderCart();
+        updateBadges();
+    }
+});
+
+// Add to wishlist / recently viewed / cart logic
+document.querySelectorAll('.merch-card').forEach(card => {
+    // Track view on "Shop Now" click
+    const shopLink = card.querySelector('a[href^="#shop-"]');
+    if (shopLink) {
+        shopLink.addEventListener('click', () => addToRecentlyViewed(card));
+    }
+
+    // Wishlist button
+    const wishBtn = card.querySelector('.wishlist-btn');
+    if (wishBtn) {
+        wishBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = wishBtn.dataset.id;
+            if (wishlist.some(item => item.id === id)) {
+                wishlist = wishlist.filter(item => item.id !== id);
+            } else {
+                wishlist.push({
+                    id,
+                    name: card.dataset.name,
+                    price: card.dataset.price,
+                    img: card.dataset.img
+                });
+            }
+            saveData();
+            renderWishlist();
+            updateBadges();
+            updateWishlistButtons();
+        });
+    }
+
+    // Add to cart with quantity
+    const qtyDiv = document.createElement('div');
+    qtyDiv.className = 'quantity';
+    qtyDiv.innerHTML = `
+        <button class="qty-minus">-</button>
+        <span class="qty-value">1</span>
+        <button class="qty-plus">+</button>
+    `;
+    const priceEl = card.querySelector('.price');
+    if (priceEl) priceEl.insertAdjacentElement('afterend', qtyDiv);
+
+    let qty = 1;
+    qtyDiv.querySelector('.qty-minus').onclick = () => {
+        if (qty > 1) qty--;
+        qtyDiv.querySelector('.qty-value').textContent = qty;
+    };
+    qtyDiv.querySelector('.qty-plus').onclick = () => {
+        qty++;
+        qtyDiv.querySelector('.qty-value').textContent = qty;
+    };
+
+    const addCartBtn = document.createElement('button');
+    addCartBtn.className = 'btn-cart';
+    addCartBtn.textContent = 'Add to Cart';
+    qtyDiv.insertAdjacentElement('afterend', addCartBtn);
+
+    addCartBtn.onclick = () => {
+        const id = card.dataset.id;
+        const existing = cart.find(i => i.id === id);
+        if (existing) {
+            existing.quantity = (existing.quantity || 1) + qty;
+        } else {
+            cart.push({
+                id,
+                name: card.dataset.name,
+                price: card.dataset.price,
+                img: card.dataset.img,
+                quantity: qty
+            });
+        }
+        saveData();
+        renderCart();
+        updateBadges();
+        showToast();
+    };
+});
+
+// Dark Mode
+const darkToggle = document.getElementById('darkModeToggle');
+darkToggle.onclick = () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    darkToggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+};
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    darkToggle.textContent = '☀️';
+}
+
+// Scroll to Top
+const scrollBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => {
+    scrollBtn.classList.toggle('show', window.scrollY > 400);
+});
+scrollBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+// Initial render
+renderWishlist();
+renderCart();
+renderRecentlyViewed();
+updateBadges();
+updateWishlistButtons();
+</script>
+</body>
+</html>
